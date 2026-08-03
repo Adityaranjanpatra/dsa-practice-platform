@@ -1,0 +1,108 @@
+{
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#13321d",
+    "activityBar.background": "#13321d",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e799",
+    "activityBarBadge.background": "#6b46b9",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#e7e7e799",
+    "sash.hoverBorder": "#13321d",
+    "statusBar.background": "#13321d",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#215732",
+    "statusBarItem.remoteBackground": "#6b46b9",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#2f7c47",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#2f7c4799",
+    "titleBar.inactiveForeground": "#e7e7e799",
+    "editorGroup.border": "#13321d",
+    "panel.border": "#13321d",
+    "sideBar.border": "#13321d",
+    "statusBar.border": "#13321d",
+    "statusBar.debuggingBackground": "#321328",
+    "statusBar.debuggingBorder": "#321328",
+    "statusBar.debuggingForeground": "#e7e7e7",
+    "tab.activeBorder": "#13321d",
+    "titleBar.border": "#2f7c47",
+    "activityBarTop.activeBackground": "#13321d",
+    "activityBarTop.background": "#13321d",
+    "activityBarTop.foreground": "#e7e7e7",
+    "activityBarTop.inactiveForeground": "#e7e7e799",
+    "commandCenter.foreground": "#e7e7e7"
+  },
+
+  "peacock.affectActivityBar": true,
+  "peacock.affectDebuggingStatusBar": true,
+  "peacock.affectEditorGroupBorder": true,
+  "peacock.affectPanelBorder": true,
+  "peacock.affectSashHover": true,
+  "peacock.affectSideBarBorder": true,
+  "peacock.affectStatusAndTitleBorders": true,
+  "peacock.affectStatusBar": true,
+  "peacock.affectTabActiveBorder": true,
+  "peacock.affectTitleBar": true,
+
+  "peacock.darkenLightenPercentage": 5,
+  "peacock.darkForegroundColor": "#15202b",
+  "peacock.lightForegroundColor": "#e7e7e7",
+
+  "peacock.elementAdjustments": {
+    "activityBar": "darken",
+    "statusBar": "darken",
+    "titleBar": "lighten",
+    "sideBar": "darken"
+  },
+
+  "peacock.favoriteColors": [
+    {
+      "name": "Angular Red",
+      "value": "#dd0531"
+    },
+    {
+      "name": "Azure Blue",
+      "value": "#007fff"
+    },
+    {
+      "name": "JavaScript Yellow",
+      "value": "#f9e64f"
+    },
+    {
+      "name": "Mandalorian Blue",
+      "value": "#1857a4"
+    },
+    {
+      "name": "Node Green",
+      "value": "#215732"
+    },
+    {
+      "name": "React Blue",
+      "value": "#61dafb"
+    },
+    {
+      "name": "Something Different",
+      "value": "#832561"
+    },
+    {
+      "name": "Svelte Orange",
+      "value": "#ff3d00"
+    },
+    {
+      "name": "Vue Green",
+      "value": "#42b883"
+    }
+  ],
+
+  "peacock.keepBadgeColor": false,
+  "peacock.keepForegroundColor": false,
+  "peacock.showColorInStatusBar": true,
+  "peacock.squigglyBeGone": false,
+  "peacock.surpriseMeFromFavoritesOnly": false,
+  "peacock.surpriseMeOnStartup": false,
+
+  "peacock.color": "#215732",
+  "peacock.remoteColor": "#8325ff",
+  "peacock.vslsJoinColor": "#8325aa",
+  "peacock.vslsShareColor": "#8325cc"
+}
