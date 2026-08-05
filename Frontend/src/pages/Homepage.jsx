@@ -1,6 +1,8 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { LogOut } from "../slice/authslice";
 import { useNavigate } from "react-router";
+import Navbar from "../components/Navbar";
+
 
 
 
@@ -8,17 +10,20 @@ function Homepage() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { data } = useSelector((state) => state.auth);
+
+
+  
 
   const handleLogout = () => {
-    dispatch(LogOut());
-    navigate("/login");
+      dispatch(LogOut());
+      navigate("/login");
   }
+
   return (
-    <div >
-      <button className="btn btn-primary"
-      onClick={handleLogout}
-      >Logout</button>
-    </div>
+    <>
+    <Navbar handleLogout={handleLogout}/>
+    </>
   )
 }
 

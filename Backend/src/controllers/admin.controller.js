@@ -19,9 +19,13 @@ const adminRegister = async (req, res) => {
     req.body.password = await bcrypt.hash(password, 10);
 
     const user = await User.create(req.body);
-    res.status(201).send(`${role} registered successfully`);
+    res.status(201).json({
+      message: "Admin registered successfully",
+    });
   } catch (err) {
-    res.status(400).send("Error: " + err.message);
+    res.status(400).json({
+      message: "Error: " + err.message,
+    });
   }
 };
 

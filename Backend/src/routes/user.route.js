@@ -11,7 +11,9 @@ const userRouter = express.Router();
 
 
 userRouter.get('/checkauth', userMiddleware, (req, res) => {
-  res.status(200).json({ user: {
+  res.status(200).json({ 
+    message:`Welcome ${req.result.firstName}`,
+    user: {
     _id: req.result._id,
     firstName: req.result.firstName,
     emailId: req.result.emailId
@@ -19,7 +21,7 @@ userRouter.get('/checkauth', userMiddleware, (req, res) => {
 });
 userRouter.post("/register", register);
 userRouter.post("/login", login);
-userRouter.post("/logout", userMiddleware, logout);
+userRouter.post("/logout",logout);
 userRouter.delete("/delete", userMiddleware, deleteAccount);
 userRouter.get("/solvedProblems", userMiddleware, getSolvedProblems);
 

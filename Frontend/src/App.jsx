@@ -8,6 +8,7 @@ import { checkauth } from "./slice/authslice"
 
 
 
+
 function App() {
   
 const dispatch=useDispatch();
@@ -18,7 +19,7 @@ const {isAuthenticated} = useSelector((state)=>state.auth);
   return (
     <div >
       <Routes>
-        <Route path='/' element={isAuthenticated?<Homepage/>:<Navigate to="/signup" />}></Route>
+        <Route path='/' element={isAuthenticated?<Homepage/>:<Navigate to="/login" />}></Route>
         <Route path='/login' element={isAuthenticated?<Navigate to="/" />:<Login/>}></Route>
         <Route path='/signup' element={isAuthenticated?<Navigate to="/" />:<Signup/>}></Route>
       </Routes>

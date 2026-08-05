@@ -1,7 +1,7 @@
 const redisClient = require("../config/redis");
 const Submission = require("../models/submission.model");
 const User = require("../models/user.model");
-const Problem= require("../models/problem.model");
+const Problem = require("../models/problem.model");
 const validate = require("../utils/validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -17,20 +17,23 @@ const register = async (req, res) => {
     req.body.role = "user";
     const user = await User.create(req.body);
     const token = jwt.sign(
-      { _id: user._id, emailId: emailId, role: "user" },
+      { _id: user._id, emailId: emailId },
       process.env.JWT_SECRET,
       { expiresIn: "1h" },
     );
     res.cookie("token", token, { maxAge: 60 * 60 * 1000 });
     res.status(201).json({
-      user:{
+      message: "User registered successfully",
+      user: {
         _id: user._id,
         firstName: user.firstName,
-        emailId: user.emailId
-      }
+        emailId: user.emailId,
+      },
     });
   } catch (err) {
-    res.status(400).send("Error: " + err.message);
+    res.status(400).json({
+      message: err.message,
+    });
   }
 };
 
@@ -43,7 +46,7 @@ const login = async (req, res) => {
     if (!password) throw new Error("Invalid Credentials");
 
     const user = await User.findOne({ emailId });
-    if (!user || user.role !== "user") {
+    if (!user) {
       throw new Error("Invalid Credentials");
     }
 
@@ -53,20 +56,23 @@ const login = async (req, res) => {
       throw new Error("Invalid Credentials");
     }
     const token = jwt.sign(
-      { _id: user._id, emailId: emailId, role: user.role },
+      { _id: user._id, emailId: emailId },
       process.env.JWT_SECRET,
       { expiresIn: "1h" },
     );
     res.cookie("token", token, { maxAge: 60 * 60 * 1000 });
     res.status(200).json({
-      user:{
-        _id:user._id,
-        firstName:user.firstName,
-        emailId:user.emailId
-      }
+      message: `Welcome back, ${user.firstName}!`,
+      user: {
+        _id: user._id,
+        firstName: user.firstName,
+        emailId: user.emailId,
+      },
     });
   } catch (err) {
-    res.status(400).send("Error: " + err.message);
+    res.status(400).json({
+      message: err.message,
+    });
   }
 };
 
@@ -80,7 +86,9 @@ const logout = async (req, res) => {
     res.clearCookie("token");
     res.send("Logged out successfully");
   } catch (err) {
-    res.status(503).send("Error: " + err.message);
+    res.status(503).json({
+      message: err.message,
+    });
   }
 };
 
@@ -90,27 +98,30 @@ const deleteAccount = async (req, res) => {
     await req.result.deleteOne();
     await Submission.deleteMany({ userId: _id });
     res.clearCookie("token");
-    res.status(200).send("Account deleted successfully");
-
+    res.status(200).json({
+      message: "Account deleted successfully",
+    });
   } catch (err) {
-    res.status(503).send("Error: " + err.message);
+    res.status(503).json({
+      message: err.message,
+    });
   }
-}
+};
 
 const getSolvedProblems = async (req, res) => {
-  try{
-    const Solved =await req.result.populate({
-      path:"problemSolved",
-      select:"_id title difficulty tags"
-    })
-    res.status(200).send(Solved.problemSolved);
-  }catch(err){
-    res.status(503).send("Error: " + err.message);
+  try {
+    const Solved = await req.result.populate({
+      path: "problemSolved",
+      select: "_id title difficulty tags",
+    });
+    res.status(200).json({
+      Solved: Solved.problemSolved,
+    });
+  } catch (err) {
+    res.status(503).json({
+      message: err.message,
+    });
   }
-}
+};
 
-
-
-
-
-module.exports = { register, login, logout,  deleteAccount, getSolvedProblems };
+module.exports = { register, login, logout, deleteAccount, getSolvedProblems };

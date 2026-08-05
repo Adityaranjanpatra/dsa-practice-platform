@@ -1,14 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosClient } from "../config/axiosClient";
 
+
+
 const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (data, { rejectWithValue }) => {
     try {
       const response = await axiosClient.post("user/register", data);
-      return response.data.user;
+      return response.data;
     } catch (err) {
-      return rejectWithValue(err);
+      return rejectWithValue(err.response?.data || { message: "Something went wrong" });
     }
   },
 );
@@ -18,9 +20,9 @@ const loginUser = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await axiosClient.post("user/login", data);
-      return response.data.user;
+      return response.data;
     } catch (err) {
-      return rejectWithValue(err);
+      return rejectWithValue(err.response?.data || { message: "Something went wrong" });
     }
   },
 );
@@ -32,7 +34,7 @@ const LogOut = createAsyncThunk(
       await axiosClient.post("user/logout");
       return null;
     } catch (err) {
-      return rejectWithValue(err);
+      return rejectWithValue(err.response?.data || { message: "Something went wrong" });
     }
   },
 );
@@ -42,12 +44,12 @@ const checkauth = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosClient.get("user/checkauth");
-      return response.data.user;
+      return response.data;
     } catch (err) {
       if (err.response?.status === 401) {
-        return rejectWithValue(null); // Special case for no session
+        return rejectWithValue(null);
       }
-      return rejectWithValue(err);
+      return rejectWithValue(err.response?.data || { message: "Something went wrong" });
     }
   },
 );
@@ -55,7 +57,7 @@ const checkauth = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
+    data: null,
     isAuthenticated: false,
     error: null,
     isLoading: false,
@@ -69,14 +71,14 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.data = action.payload;
         state.isAuthenticated = !!action.payload;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload?.message || "Something went wrong";
+        state.error = action.payload?.message ;
         state.isAuthenticated = false;
-        state.user = null;
+        state.data = null;
       })
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
@@ -84,14 +86,14 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.data = action.payload;
         state.isAuthenticated = !!action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload?.message || "Something went wrong";
+        state.error = action.payload?.message ;
         state.isAuthenticated = false;
-        state.user = null;
+        state.data = null;
       })
       .addCase(LogOut.pending, (state) => {
         state.isLoading = true;
@@ -99,14 +101,14 @@ const authSlice = createSlice({
       })
       .addCase(LogOut.fulfilled, (state) => {
         state.isLoading = false;
-        state.user = null;
+        state.data = null;
         state.isAuthenticated = false;
       })
       .addCase(LogOut.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload?.message || "Something went wrong";
+        state.error = action.payload?.message ;
         state.isAuthenticated = false;
-        state.user = null;
+        state.data = null;
       })
       .addCase(checkauth.pending, (state) => {
         state.isLoading = true;
@@ -114,7 +116,7 @@ const authSlice = createSlice({
       })
       .addCase(checkauth.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.data = action.payload;
         state.isAuthenticated = !!action.payload;
       })
       .addCase(checkauth.rejected, (state, action) => {
@@ -122,9 +124,9 @@ const authSlice = createSlice({
         state.error =
           action.payload === null
             ? null
-            : action.payload?.message || "Something went wrong";
+            : action.payload?.message ;
         state.isAuthenticated = false;
-        state.user = null;
+        state.data = null;
       });
   },
 });

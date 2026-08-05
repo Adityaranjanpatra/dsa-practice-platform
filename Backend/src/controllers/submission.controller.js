@@ -15,7 +15,7 @@ const submitCode = async (req, res) => {
     const { language, code } = req.body;
 
     if (!userId || !problemId || !language || !code) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
     const problem = await Problem.findById(problemId);
@@ -32,7 +32,7 @@ const submitCode = async (req, res) => {
     for (const { input, output } of problem.hiddenTestCases) {
       const id = await submitProblem(language, code, input);
       if (!id) {
-        return res.status(400).json({ error: "Error submitting code" });
+        return res.status(400).json({ message: "Error submitting code" });
       }
       const sol = await getSolution(id);
       if (sol?.result?.verdict !== "AC") {
@@ -40,18 +40,18 @@ const submitCode = async (req, res) => {
           submittedCode.status = "Runtime Error";
           submittedCode.errorMessage = "Runtime Error";
           await submittedCode.save();
-          return res.status(400).send(`Runtime Error`);
+          return res.status(400).json({ message: "Runtime Error" });
         } else if (sol?.result?.verdict === "TLE") {
           submittedCode.status = "Time Limit Exceeded";
           submittedCode.errorMessage = "Time Limit Exceeded";
           await submittedCode.save();
-          return res.status(400).send(`Time Limit Exceeded`);
+          return res.status(400).json({ message: "Time Limit Exceeded" });
         }
 
         submittedCode.status = "Compilation Error";
         submittedCode.errorMessage = "Compilation Error";
         await submittedCode.save();
-        return res.status(400).send(submittedCode.errorMessage);
+        return res.status(400).json({ message: submittedCode.errorMessage });
       }
       const actualOutput = normalizeOutput(sol?.output?.stdout);
       const expectedOutput = normalizeOutput(output);
@@ -59,7 +59,7 @@ const submitCode = async (req, res) => {
         submittedCode.status = "Wrong Answer";
         submittedCode.errorMessage = "Wrong Answer";
         await submittedCode.save();
-        return res.status(400).send(`Wrong Answer`);
+        return res.status(400).json({ message: "Wrong Answer" });
       }
       submittedCode.testCasePassed += 1;
       submittedCode.runtime += sol?.metrics?.cpu_time_secs;
@@ -74,7 +74,7 @@ const submitCode = async (req, res) => {
     }
     return res.status(200).json({ message: "Code submitted successfully" });
   } catch (err) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -84,23 +84,23 @@ const runCode = async (req, res) => {
     const { language, code } = req.body;
 
     if (!problemId || !language || !code) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res.status(400).json({ message: "Missing required fields" });
     }
     const problem = await Problem.findById(problemId);
     let accepted=[]
     for (const { input, output } of problem.visibleTestCases) {
       const id = await submitProblem(language, code, input);
       if (!id) {
-        return res.status(400).json({ error: "Error submitting code" });
+        return res.status(400).json({ message: "Error submitting code" });
       }
       const sol = await getSolution(id);
       if (sol?.result?.verdict !== "AC") {
         if (sol?.result?.verdict === "RE") {
-          return res.status(400).send(`Runtime Error`);
+          return res.status(400).json({ message: "Runtime Error" });
         } else if (sol?.result?.verdict === "TLE") {
-          return res.status(400).send(`Time Limit Exceeded`);
+          return res.status(400).json({ message: "Time Limit Exceeded" });
         }
-        return res.status(400).send(`Compilation Error`);
+        return res.status(400).json({ message: "Compilation Error" });
       }
       const actualOutput = normalizeOutput(sol?.output?.stdout);
       const expectedOutput = normalizeOutput(output);
@@ -122,9 +122,11 @@ const runCode = async (req, res) => {
       
       
     }
-    return res.status(200).send(accepted);
+    return res.status(200).json({
+      message: "accepted",
+    });
   } catch (err) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

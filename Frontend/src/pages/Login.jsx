@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import z from "zod";
 import { loginUser } from "../slice/authslice";
 
+
 function Login() {
   const loginSchema = z.object({
     emailId: z.string().email({ message: "Invalid email address" }),
@@ -31,18 +32,30 @@ function Login() {
 
   const dispatch = useDispatch();
 
-  const { isLoading } = useSelector((State) => State.auth);
 
-  const onSubmit = (data) => {
-    dispatch(loginUser(data));
+  const { isLoading, error,} = useSelector((State) => State.auth);
+
+
+
+
+  const onSubmit = (credentials) => {
+    dispatch(loginUser(credentials));
+
   };
+
 
   return (
     <div className="flex min-h-screen justify-center items-center ">
+      
       <form
         className="fieldset bg-base-200 border-base-300 rounded-box w-sm border p-4 flex flex-col items-center gap-8 min-h-100"
         onSubmit={handleSubmit(onSubmit)}
       >
+       { error && (
+                  <div role="alert" className="alert alert-error alert-soft">
+                <span>{error}</span>
+              </div>
+        )}
         <legend className="fieldset-legend flex justify-center w-full h-25 text-[24px] font-bold">
           Login
         </legend>
