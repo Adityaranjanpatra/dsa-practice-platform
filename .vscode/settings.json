@@ -1,0 +1,10 @@
+{
+    "node-module-intellisense.autoStripExtensions": [
+        
+        ".js",
+        ".jsx",
+        ".ts",
+        ".d.ts",
+        ".tsx"
+    ]
+}
