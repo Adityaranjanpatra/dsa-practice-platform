@@ -5,6 +5,9 @@ import Signup from "./pages/Signup"
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect } from "react"
 import { checkauth } from "./slice/authslice"
+import Layout from "./components/Layout"
+import Problem from "./pages/Problem"
+
 
 
 
@@ -17,9 +20,12 @@ useEffect(()=>{
 },[dispatch]);
 const {isAuthenticated} = useSelector((state)=>state.auth);
   return (
-    <div >
+    <div className="font-[Inter]">
       <Routes>
-        <Route path='/' element={isAuthenticated?<Homepage/>:<Navigate to="/login" />}></Route>
+        <Route element={<Layout/>}>
+          <Route path='/' element={isAuthenticated?<Homepage/>:<Navigate to="/login" />}></Route>
+          <Route path='/problems' element={isAuthenticated?<Problem/>:<Navigate to="/login" />}></Route>
+        </Route>
         <Route path='/login' element={isAuthenticated?<Navigate to="/" />:<Login/>}></Route>
         <Route path='/signup' element={isAuthenticated?<Navigate to="/" />:<Signup/>}></Route>
       </Routes>

@@ -47,7 +47,7 @@ function Signup() {
         className="fieldset bg-base-200 border-base-300 rounded-box w-lg border p-4 flex flex-col items-center gap-8 min-h-100"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <legend className="fieldset-legend flex justify-center w-full h-25 text-[24px] font-bold">
+        <legend className="fieldset-legend flex justify-center w-full h-25 text-3xl font-extrabold">
           Signup
         </legend>
 
@@ -56,7 +56,7 @@ function Signup() {
             <label className="label ">First Name</label>
             <input
               type="text"
-              className={`input ${errors.firstName && "input-error"}  `}
+              className={`input ${errors.firstName && "input-error"} text-xl font-normal` }
               placeholder="Enter First Name"
               {...register("firstName")}
             />
@@ -71,7 +71,7 @@ function Signup() {
             <label className="label">Email</label>
             <input
               type="email"
-              className={`input ${errors.emailId && "input-error"}`}
+              className={`input ${errors.emailId && "input-error"} text-xl font-normal`}
               placeholder="Enter Email"
               {...register("emailId")}
             />
@@ -86,7 +86,7 @@ function Signup() {
             <label className="label">Password</label>
             <input
               type="password"
-              className={`input ${errors.password && "input-error"}`}
+              className={`input ${errors.password && "input-error"} text-xl font-normal`}
               placeholder="Enter Password"
               {...register("password")}
             />

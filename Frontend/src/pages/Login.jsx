@@ -56,7 +56,7 @@ function Login() {
                 <span>{error}</span>
               </div>
         )}
-        <legend className="fieldset-legend flex justify-center w-full h-25 text-[24px] font-bold">
+        <legend className="fieldset-legend flex justify-center w-full h-25 text-3xl font-extrabold">
           Login
         </legend>
 
@@ -65,7 +65,7 @@ function Login() {
             <label className="label">Email</label>
             <input
               type="email"
-              className={`input ${errors.emailId && "input-error"}`}
+              className={`input ${errors.emailId && "input-error"} text-xl font-normal` }
               placeholder="Enter Email"
               {...register("emailId")}
             />
@@ -80,7 +80,7 @@ function Login() {
             <label className="label">Password</label>
             <input
               type="password"
-              className={`input ${errors.password && "input-error"}`}
+              className={`input ${errors.password && "input-error"} text-xl font-normal`}
               placeholder="Enter Password"
               {...register("password")}
             />

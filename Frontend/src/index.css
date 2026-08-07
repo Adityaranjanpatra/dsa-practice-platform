@@ -1,2 +1,18 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@font-face{
+    font-family: "Inter";
+    src:url(../public/font/Inter-VariableFont_opsz\,wght.ttf);
+    font-display: swap;
+    font-style: normal;
+    font-weight: 100 900;
+}
+
+@font-face {
+    font-family: "Inter";
+    src: url(../public/font/Inter-Italic-VariableFont_opsz\,wght.ttf);
+    font-display: swap;
+    font-style: italic;
+    font-weight: 100 900;
+}
