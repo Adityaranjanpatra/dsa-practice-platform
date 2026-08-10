@@ -7,6 +7,7 @@ import { useEffect } from "react"
 import { checkauth } from "./slice/authslice"
 import Layout from "./components/Layout"
 import Problem from "./pages/Problem"
+import ProblemPage from "./pages/ProblemPage"
 
 
 
@@ -25,10 +26,13 @@ const {isAuthenticated} = useSelector((state)=>state.auth);
         <Route element={<Layout/>}>
           <Route path='/' element={isAuthenticated?<Homepage/>:<Navigate to="/login" />}></Route>
           <Route path='/problems' element={isAuthenticated?<Problem/>:<Navigate to="/login" />}></Route>
+          {/* <Route path="/problems" element={<Problem/>} /> */}
         </Route>
+        <Route path='/problems/:id' element={isAuthenticated?<ProblemPage/>:<Navigate to="/login" />}></Route>
         <Route path='/login' element={isAuthenticated?<Navigate to="/" />:<Login/>}></Route>
         <Route path='/signup' element={isAuthenticated?<Navigate to="/" />:<Signup/>}></Route>
       </Routes>
+      
     </div>
   )
 }

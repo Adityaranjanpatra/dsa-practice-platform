@@ -16,7 +16,8 @@ userRouter.get('/checkauth', userMiddleware, (req, res) => {
     user: {
     _id: req.result._id,
     firstName: req.result.firstName,
-    emailId: req.result.emailId
+    emailId: req.result.emailId,
+    role: req.result.role
   } });
 });
 userRouter.post("/register", register);

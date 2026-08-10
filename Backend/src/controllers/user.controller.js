@@ -28,6 +28,7 @@ const register = async (req, res) => {
         _id: user._id,
         firstName: user.firstName,
         emailId: user.emailId,
+        role: user.role
       },
     });
   } catch (err) {
@@ -67,6 +68,7 @@ const login = async (req, res) => {
         _id: user._id,
         firstName: user.firstName,
         emailId: user.emailId,
+        role: user.role
       },
     });
   } catch (err) {
@@ -110,12 +112,12 @@ const deleteAccount = async (req, res) => {
 
 const getSolvedProblems = async (req, res) => {
   try {
-    const Solved = await req.result.populate({
+    const solved = await req.result.populate({
       path: "problemSolved",
       select: "_id title difficulty tags",
     });
     res.status(200).json({
-      Solved: Solved.problemSolved,
+      solved: solved.problemSolved,
     });
   } catch (err) {
     res.status(503).json({
