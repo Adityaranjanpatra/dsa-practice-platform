@@ -18,7 +18,7 @@ const problemSchema = new Schema({
   },
   tags: {
     type: String,
-    enum: ["array", "string", "dynamic programming", "graph", "tree", "math"],
+    enum: ["array", "string", "dynamic programming", "graph", "tree", "math", "linked list", "sorting", "binary search", "backtracking", "two pointers", "bit manipulation", "hash table", "heap", "matrix"],
     required: true,
   },
   visibleTestCases: [

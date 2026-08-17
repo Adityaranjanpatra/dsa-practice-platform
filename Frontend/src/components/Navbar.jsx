@@ -46,9 +46,9 @@ function Navbar() {
             </li>
             {data?.user?.role === "admin" && (
               <li>
-              <a className="text-xl hover:bg-slate-700 hover:text-white rounded-lg">
-                Create Problem
-              </a>
+              <Link to = "/admin" className="text-xl hover:bg-slate-700 hover:text-white rounded-lg">
+                Admin Panel
+              </Link>
             </li>
             )}
             <li>

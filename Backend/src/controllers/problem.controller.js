@@ -9,7 +9,6 @@ function normalizeOutput(value) {
     .trim();
 }
 
-
 const createProblem = async (req, res) => {
   const {
     title,
@@ -26,19 +25,16 @@ const createProblem = async (req, res) => {
   try {
     for (const { language, completeCode } of referenceSolution) {
       if (!language || !completeCode) {
-        return res
-          .status(400)
-          .json({
-            message: "Reference solution must have both language and completeCode",
-          });
+        return res.status(400).json({
+          message:
+            "Reference solution must have both language and completeCode",
+        });
       }
       for (const { input, output } of visibleTestCases) {
         if (!input || !output) {
-          return res
-            .status(400)
-            .json({
-              message: "Visible test cases must have both input and output",
-            });
+          return res.status(400).json({
+            message: "Visible test cases must have both input and output",
+          });
         }
 
         const id = await submitProblem(language, completeCode, input);
@@ -52,21 +48,17 @@ const createProblem = async (req, res) => {
 
         const sol = await getSolution(id);
         if (sol?.result?.verdict !== "AC") {
-          return res
-            .status(400)
-            .json({
-              message: `Reference solution failed for visible test case with input: ${input} and output: ${output}`,
-            });
+          return res.status(400).json({
+            message: `Reference solution failed for visible test case with input: ${input} and output: ${output}`,
+          });
         }
 
         const actualOutput = normalizeOutput(sol?.output?.stdout);
         const expectedOutput = normalizeOutput(output);
         if (actualOutput !== expectedOutput) {
-          return res
-            .status(400)
-            .json({
-              message: `Reference solution output does not match expected output for visible test case with input: ${input} and output: ${output}`,
-            });
+          return res.status(400).json({
+            message: `Reference solution output does not match expected output for visible test case with input: ${input} and output: ${output}`,
+          });
         }
       }
     }
@@ -82,7 +74,7 @@ const createProblem = async (req, res) => {
   }
 };
 
-const updateProblem =async (req,res)=>{
+const updateProblem = async (req, res) => {
   const {
     title,
     description,
@@ -95,29 +87,26 @@ const updateProblem =async (req,res)=>{
     problemCreator,
   } = req.body;
 
-  const problemId =req.params.id;
+  const problemId = req.params.id;
 
-  if(!problemId){
+  if (!problemId) {
     return res.status(400).json({
-      message: "Problem ID is required"
+      message: "Problem ID is required",
     });
   }
-  try{
-     for (const { language, completeCode } of referenceSolution) {
+  try {
+    for (const { language, completeCode } of referenceSolution) {
       if (!language || !completeCode) {
-        return res
-          .status(400)
-          .json({
-            message: "Reference solution must have both language and completeCode",
-          });
+        return res.status(400).json({
+          message:
+            "Reference solution must have both language and completeCode",
+        });
       }
       for (const { input, output } of visibleTestCases) {
         if (!input || !output) {
-          return res
-            .status(400)
-            .json({
-              message: "Visible test cases must have both input and output",
-            });
+          return res.status(400).json({
+            message: "Visible test cases must have both input and output",
+          });
         }
 
         const id = await submitProblem(language, completeCode, input);
@@ -130,44 +119,44 @@ const updateProblem =async (req,res)=>{
 
         const sol = await getSolution(id);
         if (sol?.result?.verdict !== "AC") {
-          return res
-            .status(400)
-            .json({
-              message: `Reference solution failed for visible test case with input: ${input} and output: ${output}`,
-            });
+          return res.status(400).json({
+            message: `Reference solution failed for visible test case with input: ${input} and output: ${output}`,
+          });
         }
 
         const actualOutput = normalizeOutput(sol?.output?.stdout);
         const expectedOutput = normalizeOutput(output);
         if (actualOutput !== expectedOutput) {
-          return res
-            .status(400)
-            .json({
-              message: `Reference solution output does not match expected output for visible test case with input: ${input} and output: ${output}`,
-        });
+          return res.status(400).json({
+            message: `Reference solution output does not match expected output for visible test case with input: ${input} and output: ${output}`,
+          });
         }
       }
     }
 
-    const updatedProblem =await Problem.findByIdAndUpdate(problemId,req.body,{returnDocument: "after",runValidators:true});
+    const updatedProblem = await Problem.findByIdAndUpdate(
+      problemId,
+      req.body,
+      { returnDocument: "after", runValidators: true },
+    );
 
     res.status(200).json({
       message: "Problem updated successfully",
-      problem: updatedProblem
+      problem: updatedProblem,
     });
-  }catch(err){
+  } catch (err) {
     return res.status(400).json({
-      message: err.message
+      message: err.message,
     });
   }
-}
+};
 
-const deleteProblem=async (req,res)=>{
-  const problemId =req.params.id;
+const deleteProblem = async (req, res) => {
+  const problemId = req.params.id;
 
-  if(!problemId){
+  if (!problemId) {
     return res.status(400).json({
-      message: "Problem ID is required"
+      message: "Problem ID is required",
     });
   }
 
@@ -176,79 +165,86 @@ const deleteProblem=async (req,res)=>{
 
     if (!deletedProblem) {
       return res.status(404).json({
-        message: "Problem not found"
+        message: "Problem not found",
       });
     }
 
     res.status(200).json({
-      message: "Problem deleted successfully"
+      message: "Problem deleted successfully",
     });
   } catch (err) {
     return res.status(400).json({
-      message: err.message
+      message: err.message,
     });
-    
   }
-}
+};
 
-const fetchProblem=async (req, res) => {
+const fetchProblem = async (req, res) => {
   const problemId = req.params.id;
 
   if (!problemId) {
     return res.status(400).json({
-      message: "Problem ID is required"
+      message: "Problem ID is required",
     });
   }
-  try{
-    const problem = await Problem.findById(problemId).select("_id title description difficulty tags  startCode referenceSolution");
+  try {
+    const problem = await Problem.findById(problemId).select(
+      "_id title description difficulty tags visibleTestCases hiddenTestCases startCode referenceSolution",
+    );
     if (!problem) {
       return res.status(404).json({
-        message: "Problem not found"
+        message: "Problem not found",
       });
     }
     res.status(200).json(problem);
   } catch (err) {
     return res.status(400).json({
-      message: err.message
+      message: err.message,
     });
   }
-}
+};
 
 const fetchSubmissions = async (req, res) => {
   try {
     const problemId = req.params.id;
     if (!problemId) {
       return res.status(400).json({
-        message: "Problem ID is required"
+        message: "Problem ID is required",
       });
     }
-    const userId= req.result._id;
+    const userId = req.result._id;
     if (!userId) {
       return res.status(400).json({
-        message: "User ID is required"
+        message: "User ID is required",
       });
     }
 
-    const submissions= await Submission.find({userId,problemId}).select("_id language code runtime memory status errorMessage");
+    const submissions = await Submission.find({ userId, problemId });
 
     res.status(200).json(submissions);
-  } catch (err) 
-  {
+  } catch (err) {
     return res.status(400).json({
-      message: err.message
-    });  
-  }
-}
-
-const fetchAllProblem=async (req, res) => {
-  try{
-    const problem= await Problem.find({}).select("_id title difficulty tags");
-    res.status(200).json(problem);
-  }catch(err){
-    return res.status(400).json({
-      message: err.message
+      message: err.message,
     });
   }
-}
+};
 
-module.exports = { createProblem, updateProblem, deleteProblem, fetchProblem, fetchAllProblem ,fetchSubmissions};
+const fetchAllProblem = async (req, res) => {
+  try {
+    const problem = await Problem.find({}).select("_id title difficulty tags");
+    res.status(200).json(problem);
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message,
+    });
+  }
+};
+
+module.exports = {
+  createProblem,
+  updateProblem,
+  deleteProblem,
+  fetchProblem,
+  fetchAllProblem,
+  fetchSubmissions,
+};

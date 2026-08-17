@@ -28,51 +28,119 @@ const submitCode = async (req, res) => {
       testCasePassed: 0,
       totalTestCases: problem.hiddenTestCases.length,
     });
-    let memory = 0;
+
+    let maxRuntime = 0;
+    let maxMemory = 0;
+    let passedTestCases = 0;
+    let failedCases = [];
+    let results = [];
+
     for (const { input, output } of problem.hiddenTestCases) {
       const id = await submitProblem(language, code, input);
       if (!id) {
         return res.status(400).json({ message: "Error submitting code" });
       }
-      const sol = await getSolution(id);
-      if (sol?.result?.verdict !== "AC") {
-        if (sol?.result?.verdict === "RE") {
-          submittedCode.status = "Runtime Error";
-          submittedCode.errorMessage = "Runtime Error";
-          await submittedCode.save();
-          return res.status(400).json({ message: "Runtime Error" });
-        } else if (sol?.result?.verdict === "TLE") {
-          submittedCode.status = "Time Limit Exceeded";
-          submittedCode.errorMessage = "Time Limit Exceeded";
-          await submittedCode.save();
-          return res.status(400).json({ message: "Time Limit Exceeded" });
-        }
 
-        submittedCode.status = "Compilation Error";
-        submittedCode.errorMessage = "Compilation Error";
-        await submittedCode.save();
-        return res.status(400).json({ message: submittedCode.errorMessage });
-      }
+      const sol = await getSolution(id);
       const actualOutput = normalizeOutput(sol?.output?.stdout);
       const expectedOutput = normalizeOutput(output);
+      const verdict = sol?.result?.verdict;
+      const runtimeMs = Number(sol?.metrics?.cpu_time_secs || 0) * 1000;
+      const memoryMb =
+        Number(sol?.metrics?.memory_peak_bytes || 0) / (1024 * 1024);
+      maxRuntime = Math.max(maxRuntime, runtimeMs);
+      maxMemory = Math.max(maxMemory, memoryMb);
+
+      const testResult = {
+        input,
+        expectedOutput,
+        actualOutput,
+        verdict,
+        runtime: runtimeMs,
+        memory: memoryMb,
+      };
+
+      if (verdict !== "AC") {
+        submittedCode.status =
+          verdict === "RE"
+            ? "Runtime Error"
+            : verdict === "TLE"
+              ? "Time Limit Exceeded"
+              : "Compilation Error";
+        submittedCode.errorMessage = submittedCode.status;
+        await submittedCode.save();
+        failedCases.push({ ...testResult, status: submittedCode.status });
+        return res.status(400).json({
+          message: submittedCode.status,
+          details: {
+            status: submittedCode.status,
+            totalTestCases: problem.hiddenTestCases.length,
+            passedTestCases,
+            failedTestCases: failedCases.length,
+            runtime: maxRuntime,
+            memory: maxMemory,
+            failedCases,
+            results,
+          },
+        });
+      }
+
       if (actualOutput !== expectedOutput) {
         submittedCode.status = "Wrong Answer";
         submittedCode.errorMessage = "Wrong Answer";
         await submittedCode.save();
-        return res.status(400).json({ message: "Wrong Answer" });
+        failedCases.push({ ...testResult, status: "Wrong Answer" });
+        return res.status(400).json({
+          message: "Wrong Answer",
+          details: {
+            status: "Wrong Answer",
+            totalTestCases: problem.hiddenTestCases.length,
+            passedTestCases,
+            failedTestCases: failedCases.length,
+            runtime: maxRuntime,
+            memory: maxMemory,
+            failedCases,
+            results,
+          },
+        });
       }
+
+      passedTestCases += 1;
       submittedCode.testCasePassed += 1;
-      submittedCode.runtime += sol?.metrics?.cpu_time_secs;
-      memory = Math.max(memory, sol?.metrics?.memory_peak_bytes);
+      submittedCode.runtime += runtimeMs;
+      submittedCode.memory = maxMemory;
+      results.push({
+        input,
+        expectedOutput,
+        actualOutput,
+        verdict: "AC",
+        runtime: runtimeMs,
+        memory: memoryMb,
+      });
     }
+
     submittedCode.status = "Accepted";
-    submittedCode.memory = memory / (1024 * 1024); // Convert bytes to MB
+    submittedCode.memory = maxMemory;
     await submittedCode.save();
+
     if (!req.result.problemSolved.includes(problemId)) {
       req.result.problemSolved.push(problemId);
       await req.result.save();
     }
-    return res.status(200).json({ message: "Code submitted successfully" });
+
+    return res.status(200).json({
+      message: "Accepted",
+      details: {
+        status: "Accepted",
+        totalTestCases: submittedCode.totalTestCases,
+        passedTestCases,
+        failedTestCases: 0,
+        runtime: maxRuntime,
+        memory: maxMemory,
+        results,
+        failedCases: [],
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -86,44 +154,108 @@ const runCode = async (req, res) => {
     if (!problemId || !language || !code) {
       return res.status(400).json({ message: "Missing required fields" });
     }
+
     const problem = await Problem.findById(problemId);
-    let accepted=[]
+    let passedTestCases = 0;
+    let failedCases = [];
+    let results = [];
+    let maxRuntime = 0;
+    let maxMemory = 0;
+
     for (const { input, output } of problem.visibleTestCases) {
       const id = await submitProblem(language, code, input);
       if (!id) {
         return res.status(400).json({ message: "Error submitting code" });
       }
+
       const sol = await getSolution(id);
-      if (sol?.result?.verdict !== "AC") {
-        if (sol?.result?.verdict === "RE") {
-          return res.status(400).json({ message: "Runtime Error" });
-        } else if (sol?.result?.verdict === "TLE") {
-          return res.status(400).json({ message: "Time Limit Exceeded" });
-        }
-        return res.status(400).json({ message: "Compilation Error" });
-      }
       const actualOutput = normalizeOutput(sol?.output?.stdout);
       const expectedOutput = normalizeOutput(output);
-      if (actualOutput !== expectedOutput) {
-        accepted.push({
-        message: "Wrong Answer",
+      const verdict = sol?.result?.verdict;
+      const runtimeMs = Number(sol?.metrics?.cpu_time_secs || 0) * 1000;
+      const memoryMb =
+        Number(sol?.metrics?.memory_peak_bytes || 0) / (1024 * 1024);
+
+      maxRuntime = Math.max(maxRuntime, runtimeMs);
+      maxMemory = Math.max(maxMemory, memoryMb);
+
+      const testResult = {
         input,
         expectedOutput,
         actualOutput,
-      })
-      }else{
-        accepted.push({
-        message: "accepted",
-        input,
-        expectedOutput,
-        actualOutput,
-      })
+        verdict,
+        runtime: runtimeMs,
+        memory: memoryMb,
+      };
+
+      if (verdict !== "AC") {
+        failedCases.push({
+          ...testResult,
+          status:
+            verdict === "RE"
+              ? "Runtime Error"
+              : verdict === "TLE"
+                ? "Time Limit Exceeded"
+                : "Compilation Error",
+        });
+        return res.status(400).json({
+          message: failedCases[failedCases.length - 1].status,
+          details: {
+            status: failedCases[failedCases.length - 1].status,
+            totalTestCases: problem.visibleTestCases.length,
+            passedTestCases,
+            failedTestCases: failedCases.length,
+            runtime: maxRuntime,
+            memory: maxMemory,
+            failedCases,
+            results,
+          },
+        });
       }
-      
-      
+
+      if (actualOutput !== expectedOutput) {
+        failedCases.push({
+          ...testResult,
+          status: "Wrong Answer",
+        });
+        return res.status(200).json({
+          message: "Wrong Answer",
+          details: {
+            status: "Wrong Answer",
+            totalTestCases: problem.visibleTestCases.length,
+            passedTestCases,
+            failedTestCases: failedCases.length,
+            runtime: maxRuntime,
+            memory: maxMemory,
+            failedCases,
+            results,
+          },
+        });
+      }
+
+      passedTestCases += 1;
+      results.push({
+        input,
+        expectedOutput,
+        actualOutput,
+        verdict: "AC",
+        runtime: runtimeMs,
+        memory: memoryMb,
+      });
     }
+
     return res.status(200).json({
-      message: "accepted",
+      message: "Accepted",
+      details: {
+        status: "Accepted",
+        totalTestCases: problem.visibleTestCases.length,
+        passedTestCases,
+        failedTestCases: 0,
+        runtime: maxRuntime,
+        memory: maxMemory,
+        results,
+        failedCases: [],
+      },
     });
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
@@ -131,5 +263,3 @@ const runCode = async (req, res) => {
 };
 
 module.exports = { submitCode, runCode };
-
-

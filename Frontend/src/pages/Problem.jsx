@@ -181,6 +181,16 @@ function Problem() {
             <option value="math">math</option>
             <option value="dynamic programming">Dynamic Programming</option>
             <option value="graph">Graph</option>
+            |<option value="linked list">Linked List</option>
+            <option value="tree">Tree</option>
+            <option value="sorting">Sorting</option>
+            <option value="binary search">Binary Search</option>
+            <option value="backtracking">Backtracking</option>
+            <option value="two pointers">Two Pointers</option>
+            <option value="bit manipulation">Bit Manipulation</option>
+            <option value="hash table">Hash Table</option>
+            <option value="heap">Heap</option>
+            <option value="matrix">Matrix</option>
           </select>
         </div>
       </div>
